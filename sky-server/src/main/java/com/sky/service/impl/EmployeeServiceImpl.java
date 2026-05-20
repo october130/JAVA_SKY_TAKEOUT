@@ -1,7 +1,10 @@
 package com.sky.service.impl;
 
 import com.sky.constant.MessageConstant;
+import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
@@ -9,10 +12,15 @@ import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.service.EmployeeService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.time.LocalDateTime;
+
+@Slf4j
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -54,6 +62,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //3、返回实体对象
         return employee;
+    }
+
+    @Override//员工信息需要由dto转化为实体类封装，然后保存到数据库中
+    public void save(EmployeeDTO employeeDTO) {
+        log.info("当前员工的id是" + BaseContext.getCurrentId());
+        Employee employee = new Employee();
+        //创建实体类，将dto中的数据复制到实体类中
+        BeanUtils.copyProperties(employeeDTO, employee);//利用BeanUtils工具类将dto中的数据复制到实体类中
+        employee.setStatus(StatusConstant.ENABLE);//因为employee实体类里面属性要多几个，所以需要手动设置属性
+        //这里设置的状态属性和下面的密码都有实体类，不用写死
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));//这里的密码是需要md5加密的
+        employee.setCreateTime(LocalDateTime.now());//这里设置创建时间和更新时间
+        employee.setUpdateTime(LocalDateTime.now());
+
+
+        employee.setCreateUser(BaseContext.getCurrentId());
+        employee.setUpdateUser(BaseContext.getCurrentId());
+
+
+        employeeMapper.insert(employee);
     }
 
 }
