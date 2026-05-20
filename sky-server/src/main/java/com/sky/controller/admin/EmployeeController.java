@@ -48,7 +48,7 @@ public class EmployeeController {
         claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
         String token = JwtUtil.createJWT(
                 jwtProperties.getAdminSecretKey(),
-                jwtProperties.getAdminTtl(),
+                jwtProperties.getAdminTtl(),// jwt令牌有效期
                 claims);
 
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
