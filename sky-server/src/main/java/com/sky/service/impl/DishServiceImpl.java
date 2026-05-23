@@ -135,5 +135,22 @@ public class DishServiceImpl  implements Dishservice {
 
     }
 
+    @Override
+    public void StartOrEnd(Integer status, Long id) {
+         Dish dish = Dish.builder()
+                .id(id)
+                .status(status)
+                .build();
+        log.info("修改菜品状态成功：{}", dish);
+                dishMapper.update(dish);
+
+
+    }
+
+    @Override
+    public List<Dish> listByCategoryId(Long categoryId) {
+        return dishMapper.listByCategoryId(categoryId);
+    }
+
 
 }

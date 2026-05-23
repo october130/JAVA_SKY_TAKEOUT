@@ -36,4 +36,10 @@ public interface DishMapper {
 //根据ID动态修改菜品数据，不包括菜品风味数据
 @AutoFill( value = OperationType.UPDATE)
     void update(Dish dish);
+
+    /**
+     * 根据分类id查询菜品列表（用于套餐新增时选择菜品）
+     */
+    @Select("select * from sky_take_out.dish where category_id = #{categoryId} and status = 1")
+    List<Dish> listByCategoryId(Long categoryId);
 }
