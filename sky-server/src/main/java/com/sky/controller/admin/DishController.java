@@ -1,18 +1,18 @@
 package com.sky.controller.admin;
 
 import com.sky.dto.DishDTO;
+import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.DishFlavor;
 import com.sky.mapper.DishFlavorMapper;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.Dishservice;
+import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +25,8 @@ public class DishController {
     private Dishservice dishservice;
 
 
+
+
     @PostMapping
     @ApiOperation("新增菜品")
     public Result save( @RequestBody DishDTO dishDTO) {
@@ -35,5 +37,42 @@ public class DishController {
 
         return Result.success();
     }
+
+@GetMapping("/page")
+@ApiOperation("菜品分页查询操作")
+    public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO) {
+        log.info("分页查询返回的实体类：{}", dishPageQueryDTO);
+      PageResult pageResult = dishservice.pageQuery(dishPageQueryDTO);
+
+        return Result.success(pageResult);
+    }
+
+
+    @DeleteMapping
+    @ApiOperation("删除菜品")//批量删除菜品
+    public Result delete(@RequestParam List<Long>ids){
+        log.info("删除菜品：{}", ids);
+        dishservice.delete(ids);//根据前端放的id进行批量删除
+        return Result.success();
+
+    }
+
+
+    @GetMapping("/{id}")//查询回显，和员工操作一样，点击修改按钮时，可以看到该员工信息，然后再修改
+    @ApiOperation("根据id查询菜品")
+    public Result<DishVO> getById(@PathVariable Long id) {
+        log.info("根据id查询菜品：{}", id);
+        DishVO dishVO = dishservice.getByIdWithFlavor(id);
+        return Result.success(dishVO);
+    }
+@PutMapping
+@ApiOperation("修改菜品")
+public Result update(@RequestBody DishDTO dishDTO){
+        log.info("修改菜品：{}", dishDTO);
+        dishservice.updateflavor(dishDTO);
+        return Result.success();
+
+}
+
 
 }
