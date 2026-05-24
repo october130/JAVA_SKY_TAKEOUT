@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.sky.entity.SetmealDish;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 @Mapper
@@ -14,4 +15,8 @@ public interface SetmealDishMapper {
      * 批量插入套餐-菜品关联数据
      */
     void insertBatch(List<SetmealDish> setmealDishes);
+
+    void deleteBySetmealId(List<Long> ids);
+@Select("select * from setmeal_dish where setmeal_id = #{id}")
+    List<SetmealDish> getBySetmealId(Long id);
 }
