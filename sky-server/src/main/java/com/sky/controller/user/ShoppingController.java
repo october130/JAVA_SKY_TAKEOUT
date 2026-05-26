@@ -26,7 +26,7 @@ public class ShoppingController {
     public Result<Integer> getStatus() {
         log.info("用户端查询营业状态");
         Integer shopStatus = (Integer) redisTemplate.opsForValue().get(KEY);
-        log.info("当前营业状态为：{}",shopStatus == 1 ? "营业中" : "打烊中");
+        log.info("当前营业状态为：{}",shopStatus != null && shopStatus == 1 ? "营业中" : "打烊中");
         return  Result.success(shopStatus);
     }
 

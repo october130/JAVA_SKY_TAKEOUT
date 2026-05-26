@@ -42,4 +42,7 @@ public interface DishMapper {
      */
     @Select("select * from sky_take_out.dish where category_id = #{categoryId} and status = 1")
     List<Dish> listByCategoryId(Long categoryId);
+
+
+    List<Dish> list(Dish dish);
 }
