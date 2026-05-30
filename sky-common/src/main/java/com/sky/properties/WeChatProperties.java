@@ -19,5 +19,6 @@ public class WeChatProperties {
     private String weChatPayCertFilePath; //平台证书
     private String notifyUrl; //支付成功的回调地址
     private String refundNotifyUrl; //退款成功的回调地址
+    private Boolean mockPay = false; //是否开启模拟支付（true=绕过微信支付，直接标记支付成功）
 
 }

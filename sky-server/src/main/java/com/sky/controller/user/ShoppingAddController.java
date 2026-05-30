@@ -42,4 +42,12 @@ public  Result remove(){
         shoppingAddService.clean();
         return Result.success();
 }
+@PostMapping("/sub")
+@ApiOperation("购物车减操作")
+public  Result subtract(@RequestBody ShoppingCartDTO shoppingCartDTO){
+        log.info("购物车减操作");
+        shoppingAddService.subtract(shoppingCartDTO);
+        return Result.success();
+}
+
 }

@@ -35,12 +35,6 @@ public class ShoppingAddServiceImpl implements ShoppingAddService {
         BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
         Long currentId = BaseContext.getCurrentId();//jwt中获取用户id，直接套用
         log.info("当前用户id为：{}", currentId);
-        
-//        if (currentId == null) {
-//            log.error("用户未登录，无法添加购物车");
-//            return;
-//        }
-//
         shoppingCart.setUserId(currentId);//添加用户id
 
         List<ShoppingCart> list = shoppingAddMapper.list(shoppingCart);//mapper层查询，
@@ -53,18 +47,9 @@ public class ShoppingAddServiceImpl implements ShoppingAddService {
         else{//如果数据库中没有数据，则证明购物车里面还没有数据，得重新插入
             Long dishId = shoppingCartDTO.getDishId();
             Long setmealId = shoppingCartDTO.getSetmealId();
-//            // 参数校验：dishId 和 setmealId 不能同时为空
-//            if (dishId == null && setmealId == null) {
-//                log.error("添加购物车失败：菜品ID和套餐ID不能同时为空");
-//                return;
-//            }
             //在插入数据之前需要判断点的是菜品还是套餐
             if(dishId != null){
                 Dish dish = dishMapper.getById(dishId);
-//                if (dish == null) {
-//                    log.error("添加购物车失败：菜品不存在，dishId={}", dishId);
-//                    return;
-//                }
                 shoppingCart.setName(dish.getName());
                 shoppingCart.setImage(dish.getImage());
                 shoppingCart.setAmount(dish.getPrice());
@@ -106,6 +91,34 @@ public class ShoppingAddServiceImpl implements ShoppingAddService {
     public void clean() {
         Long userId = BaseContext.getCurrentId();
         shoppingAddMapper.deleteByUserId(userId);
+
+    }
+
+    @Override
+    public void subtract(ShoppingCartDTO shoppingCartDTO) {
+
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+        Long currentId = BaseContext.getCurrentId();//jwt中获取用户id，直接套用
+        shoppingCart.setUserId(currentId);
+        List<ShoppingCart> list = shoppingAddMapper.list(shoppingCart);//mapper层查询，该用户id下购物车数据
+        if(list!=null && list.size()>0) {
+            ShoppingCart cart = list.get(0);//这个还是没搞懂为什么是get(0)
+
+            cart.setNumber(cart.getNumber() - 1);
+            if (cart.getNumber() > 0) {
+                shoppingAddMapper.updateNumberById(cart);//购物车中重复商品数量减一
+            } else {
+                shoppingAddMapper.delete(cart);
+            }
+            log.info("购物车数据：{}", cart);
+        }
+        else{
+            log.info("购物车数据不存在");
+        }
+
+
+
 
     }
 }
